@@ -6,10 +6,6 @@ public class Brick extends PApplet {
     static PApplet a = Main.processing;
     static float brickWidth = 40;
     static float brickHeight = 70;
-    static int screenTop = 0;
-    static int screenBottom = 700;
-    static int screenLeft = 0;
-    static int screenRight = 400;
     int brickColorR;
     int brickColorG;
     int brickColorB;
@@ -27,22 +23,19 @@ public class Brick extends PApplet {
         this.brickX = x;
         this.brickY = y;
     }
-    public boolean collidesWith(Brick oldBrick, Brick newBrick){
+    public static boolean collidesWith(Brick oldBrick, Brick newBrick){
         float xDistance = newBrick.brickX - oldBrick.brickX;
         float yDistance = newBrick.brickY - oldBrick.brickY;
-        if ((xDistance<=brickWidth && xDistance>=(-1*brickWidth)) || (yDistance<=brickY && yDistance>=(-1*brickY)))
+        if ((xDistance<=brickWidth && xDistance>=(-1*brickWidth)) ||
+                (yDistance<=brickHeight && yDistance>=(-1*brickHeight)))
             return true;
         return false;
     }
-    public void addBrick(){
-            boolean validPosition = false;
-            int attempt = 0;
+    public static void addBrick(float x, float y){
+            boolean validPosition = true;
             Brick brick = new Brick();
 
-            // loop until we find a valid position for the brick that doesn't collide with any others
-            while (!validPosition && attempt<1000) {
-                brick.setPosition(random(screenLeft + (brickWidth / 2), screenRight - (brickWidth / 2)),
-                        random(-50*brickHeight,screenTop - brickHeight / 2)); // set random position at top of screen
+                brick.setPosition(x, y); // set random position at top of screen
                 validPosition = true; // assume position is valid unless proven otherwise
 
                 // check if the brick collides with any other bricks already on the screen
@@ -52,8 +45,6 @@ public class Brick extends PApplet {
                         break; // no need to check other bricks once collision is detected
                     }
                 }
-                attempt ++;
-            }
 
             if (validPosition){
                 ArrayList<Brick> closedBricks = new ArrayList<>();
@@ -66,8 +57,13 @@ public class Brick extends PApplet {
                 }
                 Collections.sort(closedBricks, Comparator.comparingDouble(Brick::getBrickX));
 
-                for (int i = 0; i < closedBricks.size() - 1; i++) {
-                    if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Human.width) {
+                for (int i = 0; i < closedBricks.size(); i++) {
+                    if (closedBricks.size() == 1){
+                        Main.bricks.add(brick);
+                        madeBricks ++ ;
+                        break;
+                    }
+                    else if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Human.width) {
                         Main.bricks.add(brick);
                         madeBricks ++ ;
                         break;
