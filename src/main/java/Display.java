@@ -1,8 +1,6 @@
 import processing.core.PApplet;
 
 public class Display extends PApplet {
-    public static PApplet p = Main.processing;
-
     public void show() {
         for (Brick b : Main.bricks) {
             showBrick(b.brickX, b.brickY, b.brickColorR, b.brickColorG, b.brickColorB);
@@ -24,6 +22,6 @@ public class Display extends PApplet {
         }
         public static void showItem ( float x, float y){
             Main.processing.fill(255);
-            Main.processing.circle(x,y,Item.r);
+            Main.processing.rect(x, y, Brick.brickWidth, Brick.brickHeight);
         }
 }

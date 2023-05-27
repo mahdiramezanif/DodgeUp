@@ -2,7 +2,6 @@ import java.util.Random;
 
 public class Item implements Interface{
     private static final Random random = new Random();
-    static float r = 40;
     float x;
     float y;
     static int madeItems = 0;

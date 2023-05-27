@@ -14,6 +14,14 @@ public class Brick extends PApplet implements Interface{
 
     public Brick() {
         Random rand = new Random();
+        int r =255;
+        int g =255;
+        int b =255;
+        while (r==255 && g==255&& b == 255) {
+            r = rand.nextInt(256);
+            g = rand.nextInt(256);
+            b = rand.nextInt(256);
+        }
         this.brickColorR = rand.nextInt(256);
         this.brickColorG = rand.nextInt(256);
         this.brickColorB = rand.nextInt(256);
@@ -47,7 +55,7 @@ public class Brick extends PApplet implements Interface{
             if (validPosition){
                 ArrayList<Brick> closedBricks = new ArrayList<>();
                 closedBricks.add(brick);
-                double closeDistance = (1.5*Human.high)+brickHeight;
+                double closeDistance = (1.5*Main.humanSize)+brickHeight;
                 for (Brick b:Main.bricks) {
                     float yDistance = brick.brickY - b.brickY;
                     if (yDistance<=(closeDistance) && yDistance>=(-1*closeDistance))
@@ -61,7 +69,7 @@ public class Brick extends PApplet implements Interface{
                 }
                 else {
                     for (int i = 0; i < closedBricks.size() - 1; i++) {
-                        if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Human.width) {
+                        if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Main.humanSize) {
                             Main.bricks.add(brick);
                             madeBricks++;
                             break;
