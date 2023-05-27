@@ -2,8 +2,7 @@ import processing.core.PApplet;
 
 import java.util.*;
 
-public class Brick extends PApplet {
-    static PApplet a = Main.processing;
+public class Brick extends PApplet implements Interface{
     static float brickWidth = 40;
     static float brickHeight = 70;
     int brickColorR;
@@ -31,12 +30,11 @@ public class Brick extends PApplet {
             return true;
         return false;
     }
-    public static void addBrick(float x, float y){
+    public void showObjects(float x, float y){
             boolean validPosition = true;
             Brick brick = new Brick();
 
-                brick.setPosition(x, y); // set random position at top of screen
-                validPosition = true; // assume position is valid unless proven otherwise
+            brick.setPosition(x, y); // set random position at top of screen
 
                 // check if the brick collides with any other bricks already on the screen
                 for (Brick existingBrick : Main.bricks) {
@@ -57,16 +55,17 @@ public class Brick extends PApplet {
                 }
                 Collections.sort(closedBricks, Comparator.comparingDouble(Brick::getBrickX));
 
-                for (int i = 0; i < closedBricks.size(); i++) {
-                    if (closedBricks.size() == 1){
-                        Main.bricks.add(brick);
-                        madeBricks ++ ;
-                        break;
-                    }
-                    else if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Human.width) {
-                        Main.bricks.add(brick);
-                        madeBricks ++ ;
-                        break;
+                if (closedBricks.size() == 1){
+                    Main.bricks.add(brick);
+                    madeBricks ++ ;
+                }
+                else {
+                    for (int i = 0; i < closedBricks.size() - 1; i++) {
+                        if (closedBricks.get(i + 1).getBrickX() - closedBricks.get(i).getBrickX() > Human.width) {
+                            Main.bricks.add(brick);
+                            madeBricks++;
+                            break;
+                        }
                     }
                 }
             }
@@ -75,4 +74,5 @@ public class Brick extends PApplet {
     public float getBrickX() {
         return brickX;
     }
+
 }
