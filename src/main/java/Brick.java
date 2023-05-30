@@ -31,6 +31,7 @@ public class Brick extends PApplet implements Interface{
         this.brickY = y;
     }
     public static boolean collidesWith(Brick oldBrick, Brick newBrick){
+//        Checks whether these two bricks overlap or not
         float xDistance = newBrick.brickX - oldBrick.brickX;
         float yDistance = newBrick.brickY - oldBrick.brickY;
         if ((xDistance<=brickWidth && xDistance>=(-1*brickWidth)) ||
@@ -54,6 +55,7 @@ public class Brick extends PApplet implements Interface{
 
             if (validPosition){
                 ArrayList<Brick> closedBricks = new ArrayList<>();
+//                This array is a collection of bricks that have a small vertical distance from the current brick
                 closedBricks.add(brick);
                 double closeDistance = (1.5*Main.humanSize)+brickHeight;
                 for (Brick b:Main.bricks) {
@@ -62,6 +64,7 @@ public class Brick extends PApplet implements Interface{
                         closedBricks.add(b);
                 }
                 Collections.sort(closedBricks, Comparator.comparingDouble(Brick::getBrickX));
+//                Sort the bricks by their x-component
 
                 if (closedBricks.size() == 1){
                     Main.bricks.add(brick);
