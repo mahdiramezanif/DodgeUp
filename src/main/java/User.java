@@ -2,12 +2,16 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class User {
+    static int count = 0;
+    int id;
     String name;
     int score;
 
     public User(String name, int score) {
         this.name = name;
         this.score = score;
+        count++;
+        id = count ;
     }
     public String showTop(){
         String s = "Top players are : \n";

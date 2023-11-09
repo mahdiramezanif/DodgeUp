@@ -27,22 +27,23 @@ public class Main extends PApplet {
     public static ArrayList<User> users = new ArrayList<>();
     static User user;
     boolean notPrinted = true;
+    int passedItem = 0;
 
     public static void main(String[] args) {
         Database.read();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your name : ");
-        String name = scanner.nextLine();
+        String newName = scanner.nextLine();
         boolean exist = false;
         for (User u : users){
-            if (u.name.equals(name)) {
+            if (u.name.equals(newName)) {
                 exist = true;
                 user = u;
                 break;
             }
         }
         if (!exist){
-            user =new User(name,0);
+            user =new User(newName,0);
             users.add(user);
         }
         PApplet.main("Main", args);
@@ -85,7 +86,7 @@ public class Main extends PApplet {
                 textSize(20);
                 String s = "Score : ".concat(Integer.toString(score));
                 text(s, 40, 450);
-                print();
+            print();
         }
         else if(finish){
             background(255);
@@ -140,15 +141,16 @@ public class Main extends PApplet {
     }
     public int passed(){
         passedBrick = 0;
+        passedItem = 0;
         for (Brick b : bricks){
             if (b.brickY>(screenBottom+((Brick.brickHeight)/2)))
                 passedBrick ++;
         }
         for (Item i : items){
             if (i.y>(screenBottom+((Brick.brickHeight)/2)))
-                passedBrick ++;
+                passedItem ++;
         }
-        if (passedBrick == 10-hit)
+        if ((passedBrick+passedItem) == 10-hit)
             finish = true;
         return passedBrick;
     }

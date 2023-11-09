@@ -6,39 +6,75 @@ public class Database {
 
     public static void read() {
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
             url = "jdbc:mysql://127.0.0.1:3306/game";
 
             Connection conn = DriverManager.getConnection(url, user, password);
 
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM  gameinformation.users");
 
             while (rs.next()) {
                 Main.users.add(new User(rs.getString("name"),rs.getInt("score")));
             }
             conn.close();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
-    public static void write(){
-        url = "jdbc:mysql://127.0.0.1:3306/game?useSSL=false";
+    public static void write() {
+        url = "jdbc:mysql://127.0.0.1:3306/game";
 
-        // Create a connection to the MySQL database
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            Statement stmt = conn.createStatement();
-            // Truncate the patient table to remove any existing data
-            stmt.executeUpdate("TRUNCATE TABLE users");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Insert all patients from the array list into the patient table
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO users(name," +
-                    " score) VALUES (?, ?)");
-            for (User u : Main.users) {
-                ps.setString(1, u.name);
-                ps.setInt(2, u.score);
-                ps.executeUpdate();
+            // Start transaction
+            conn.setAutoCommit(false);
+
+            try {
+                for (User u : Main.users) {
+                    PreparedStatement ps = conn.prepareStatement("SELECT * FROM gameinformation.users WHERE name = ?");
+                    ps.setString(1, u.name);
+                    ResultSet rs = ps.executeQuery();
+
+                    // If the user exists, update their score
+                    if (rs.next()) {
+                        int currentScore = rs.getInt("score");
+                        int newScore = currentScore + u.score;
+                        ps = conn.prepareStatement("UPDATE gameinformation.users SET score = ? WHERE name = ?");
+                        ps.setInt(1, newScore);
+                        ps.setString(2, u.name);
+                        ps.executeUpdate();
+                    }
+                    // If the user doesn't exist, insert a new row
+                    else {
+                        ps = conn.prepareStatement("INSERT INTO gameinformation.users (name, score) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                        ps.setString(1, u.name);
+                        ps.setInt(2, u.score);
+                        ps.executeUpdate();
+
+                        // Get the generated id for the newly inserted row
+                        ResultSet generatedKeys = ps.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            u.id= generatedKeys.getInt(3); // Set the id of the User object to the generated id
+                        }
+                    }
+                }
+
+                // Commit transaction
+                conn.commit();
+            } catch (Exception e) {
+                // Rollback transaction if an error occurred
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
             }
-        } catch (SQLException e) {
+
+            conn.close();
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
